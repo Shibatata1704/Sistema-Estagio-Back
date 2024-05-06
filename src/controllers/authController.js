@@ -1,11 +1,14 @@
-import userModel from "../models/userModel.js"
-import authModel from "../models/authModel.js"
+import UserModel from "../models/userModel.js"
+import CompanyModel from "../models/companyModel.js"
+import AuthModel from "../models/authModel.js"
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import { httpStatusCodes } from "../responseHandlers/statusCodes.js";
 import getToken from "../utils/getToken.js";
 import auth from "../models/authModel.js";
+
+
 
 class AuthController {
 
@@ -21,14 +24,16 @@ class AuthController {
             if(!validator.isEmail(email)) 
                 return res.status(httpStatusCodes.INVALID_EMAIL).json({message: "E-mail invalido"});
 
-            const user = await userModel.findOne({email});
-
+            var user = await UserModel.findOne({email});
+            if(!user){
+                user = await CompanyModel.findOne({email});
+            }
             
             if(!await bcrypt.compare(password, user.password)) {
                 res.status(httpStatusCodes.ERROR).json({ message: "erro"});
             }
 
-            const isUserLogged = await authModel.findOne({email});
+            const isUserLogged = await AuthModel.findOne({email});
             const token = jwt.sign({id: user._id}, process.env.SECRET ,{
                 expiresIn: "1d",
             });
@@ -37,11 +42,11 @@ class AuthController {
             user.password = undefined;
 
             if(isUserLogged) {
-                await authModel.updateOne({_id: isUserLogged._id}, {email, token})
+                await AuthModel.updateOne({_id: isUserLogged._id}, {email, token})
 
             } else {
     
-                await authModel.create({email, token})
+                await AuthModel.create({email, token})
             }
 
             res.send({
@@ -60,7 +65,7 @@ class AuthController {
                 res.status(httpStatusCodes.ERROR).json({ message: `Não autenticado`});
             }
 
-            const user = await authModel.deleteOne({token});
+            const user = await AuthModel.deleteOne({token});
            
             if(!user) {
                 res.status(httpStatusCodes.ERROR).json({ message: `Não autenticado`});
@@ -74,7 +79,7 @@ class AuthController {
 
     static async checkWhitelist (req,res){
         try{
-            const users = await authModel.find({});
+            const users = await AuthModel.find({});
             res.status(200).json(users);
         }catch (erro) {
             res.status(500).json({ message: `${erro.message} - falha na requisição`});
