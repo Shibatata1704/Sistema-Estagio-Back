@@ -18,13 +18,11 @@ class UserController {
     };
 
     static async getUserByToken (req,res){
-
-        
         try{
             const token = getToken(req)
 
             if(!token) {
-                res.status(httpStatusCodes.ERROR).json({ message: `Não autenticado`});
+                return res.status(httpStatusCodes.ERROR).json({ message: `Não autenticado`});
             }
     
             const {id: _id} = jwt.decode(token)
@@ -35,12 +33,12 @@ class UserController {
             }
 
             if(!user) {
-                res.status(httpStatusCodes.NOT_FOUND).json({ message: `Não encontrado`});
+                return res.status(httpStatusCodes.NOT_FOUND).json({ message: `Não encontrado`});
             }
 
-            res.status(httpStatusCodes.OK).json(user);
+            return res.status(httpStatusCodes.OK).json(user);
         }catch (erro) {
-            res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: `${erro.message} - falha na requisição do user`});
+            return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: `${erro.message} - falha na requisição do user`});
         }
     };
 
