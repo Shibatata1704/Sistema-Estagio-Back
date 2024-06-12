@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import {skillSchema} from "./skillModel.js";
 
 const userSchema = new mongoose.Schema({
-  name: {
+  nome: {
     type: String,
     required: true,
   },
@@ -12,19 +13,20 @@ const userSchema = new mongoose.Schema({
     required: true,
     lowercase: true,
   },
-  password:{
+  senha:{
     type: String,
     required: true,
   },
+  //habilidade: skillSchema,
   createdAt:{
     type: Date,
     default: Date.now,
   },
-});
+}, {versionKey: false});
 
 userSchema.pre('save', async function(next){
-  const hash = await bcrypt.hash(this.password, 10);
-  this.password = hash;
+  const hash = await bcrypt.hash(this.senha, 10);
+  this.senha = hash;
 
   next();
 });

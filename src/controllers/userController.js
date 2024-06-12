@@ -1,7 +1,6 @@
 import validator from "validator";
 import UserModel from "../models/userModel.js";
 import CompanyModel from "../models/companyModel.js";
-import user from "../models/userModel.js";
 import { httpStatusCodes } from "../responseHandlers/statusCodes.js";
 import jwt from "jsonwebtoken";
 import getToken from "../utils/getToken.js";
@@ -27,7 +26,7 @@ class UserController {
     
             const {id: _id} = jwt.decode(token)
 
-            const user = await UserModel.findOne({_id});
+            var user = await UserModel.findOne({_id});
             if(!user){
                 user = await CompanyModel.findOne({_id});
             }
@@ -35,7 +34,7 @@ class UserController {
             if(!user) {
                 return res.status(httpStatusCodes.NOT_FOUND).json({ message: `Não encontrado`});
             }
-
+            
             return res.status(httpStatusCodes.OK).json(user);
         }catch (erro) {
             return res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: `${erro.message} - falha na requisição do user`});
@@ -57,11 +56,11 @@ class UserController {
         const user = req.body;
         try{
             if(!validator.isEmail(user.email)) 
-                return res.status(httpStatusCodes.INVALID_EMAIL).json({message: "E-mail invalido"});
-            const {_id, name, email} = await UserModel.create(user)
+                return res.status(httpStatusCodes.INVALID_DATA).json({message: "E-mail invalido"});
+            const {_id, nome, email} = await UserModel.create(user)
 
             const resposta = { 
-                _id, name, email
+                _id, nome, email
             }
             res.status(201).json({ message: "Usuario criado com sucesso", user: resposta});
         }catch (erro){
@@ -73,11 +72,11 @@ class UserController {
         const company = req.body;
         try{
             if(!validator.isEmail(company.email)) 
-                return res.status(httpStatusCodes.INVALID_EMAIL).json({message: "E-mail invalido"});
-            const {_id, name, email} = await CompanyModel.create(company)
+                return res.status(httpStatusCodes.INVALID_DATA).json({message: "E-mail invalido"});
+            const {_id, nome, email} = await CompanyModel.create(company)
 
             const resposta = { 
-                _id, name, email
+                _id, nome, email
             }
             res.status(201).json({ message: "Usuario criado com sucesso", company: resposta});
         }catch (erro){
@@ -87,21 +86,21 @@ class UserController {
 
     static async updateUser (req,res){
         try{
-            const token = req.params.token;
-            const user = req.body
-
+            const token = getToken(req)
+            const dados = req.body
+           
             if(!token){
                 res.status(httpStatusCodes.ERROR).json({ message: "Não autenticado"});
             }
             
-            await UserModel.findByIdAndUpdate(id, user);
-
-            const {id: userId, name, email} = await UserModel.findById({_id: id});
-            const resposta = { 
-                id: userId, name, email
+            const {id: _id} = jwt.decode(token)
+            
+            var user = await UserModel.findByIdAndUpdate(_id, dados);
+            if(!user){
+                user = await CompanyModel.findByIdAndUpdate(_id, dados);
             }
 
-            res.status(200).json({message: "Usuário atualizado com sucesso.", user: resposta});
+            res.status(200).json({message: "Usuário atualizado com sucesso."});
         }catch (erro) {
             res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: `${erro.message} - falha na atualização`});
         }
@@ -109,11 +108,19 @@ class UserController {
 
     static async deleteUserById (req,res){
         try{
-            const token = req.params.token;
-            
-            if(!token){
-                res.status(httpStatusCodes.ERROR).json({ message: "Não autenticado"});
+            const token = getToken(req)
+
+            if(!token) {
+                return res.status(httpStatusCodes.ERROR).json({ message: `Não autenticado`});
             }
+
+            const {id: _id} = jwt.decode(token)
+
+            var user = await UserModel.findByIdAndDelete({_id});
+            if(!user){
+                user = await CompanyModel.findByIdAndDelete({_id});
+            }
+
             res.status(200).json({message: "Usuário removido com sucesso"});
         }catch (erro) {
             res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: `${erro.message} - falha na exclusão`});

@@ -3,12 +3,9 @@ import UserController from "../controllers/userController.js";
 
 const registerRoutes = Router();
 
+registerRoutes.post("/candidato", UserController.createUser);
+registerRoutes.post("/empresa", UserController.createCompany);
+// userRoutes.get("/", UserController.getUsers);
 
-registerRoutes.get("/", UserController.getUserByToken);
-registerRoutes.get("/email/:email", UserController.getUserByEmail);
-registerRoutes.put("/:id", UserController.updateUser);
-registerRoutes.delete("/:id", UserController.deleteUserById);
-//authRoutes.post("/register", AuthController.loginUser);
 
 export default registerRoutes;
-

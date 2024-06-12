@@ -19,17 +19,17 @@ class AuthController {
 
 
     static async loginUser (req,res){
-        const {email, password} = req.body;
+        const {email, senha} = req.body;
         try{
             if(!validator.isEmail(email)) 
-                return res.status(httpStatusCodes.INVALID_EMAIL).json({message: "E-mail invalido"});
+                return res.status(httpStatusCodes.INVALID_DATA).json({message: "E-mail invalido"});
 
             var user = await UserModel.findOne({email});
             if(!user){
                 user = await CompanyModel.findOne({email});
             }
             
-            if(!await bcrypt.compare(password, user.password)) {
+            if(!await bcrypt.compare(senha, user.senha)) {
                 res.status(httpStatusCodes.ERROR).json({ message: "erro"});
             }
 
@@ -39,7 +39,7 @@ class AuthController {
             });
 
 
-            user.password = undefined;
+            user.senha = undefined;
 
             if(isUserLogged) {
                 await AuthModel.updateOne({_id: isUserLogged._id}, {email, token})
@@ -51,6 +51,9 @@ class AuthController {
 
             res.send({
                 token,
+                id: user.id,
+                // name: user.nome,
+                // email: user.email
             });
         } catch(erro){
             res.status(httpStatusCodes.ERROR).json({ message: `${erro.message}`});

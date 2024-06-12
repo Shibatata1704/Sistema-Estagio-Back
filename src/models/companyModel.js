@@ -1,8 +1,10 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
+import { branchesSchema } from "./branchesModel.js";
+import { vacanciesSchema } from "./vacanciesModel.js";
 
 const companySchema = new mongoose.Schema({
-  name: {
+  nome: {
     type: String,
     required: true,
   },
@@ -12,16 +14,19 @@ const companySchema = new mongoose.Schema({
     required: true,
     lowercase: true,
   },
-  password:{
+  senha:{
     type: String,
     required: true,
   },
   ramo:{
     type: String,
+    required: true,
   },
   descricao:{
     type: String,
+    required: true,
   },
+  vaga: vacanciesSchema,
   createdAt:{
     type: Date,
     default: Date.now,
@@ -29,8 +34,8 @@ const companySchema = new mongoose.Schema({
 });
 
 companySchema.pre('save', async function(next){
-  const hash = await bcrypt.hash(this.password, 10);
-  this.password = hash;
+  const hash = await bcrypt.hash(this.senha, 10);
+  this.senha = hash;
 
   next();
 });
