@@ -133,6 +133,7 @@ class UserController {
         const { competencias, experiencia } = req.body;
       
         try {
+            experiencia
             User.find({ competencia :  competencias})
             .then(users => {
               // Handle found users
