@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
-import { branchesSchema } from "./branchesModel.js";
 import { vacanciesSchema } from "./vacanciesModel.js";
 
 const companySchema = new mongoose.Schema({
@@ -26,7 +25,10 @@ const companySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  vaga: vacanciesSchema,
+  tipo: {
+    type: String,
+  },
+  vaga: [vacanciesSchema],
   createdAt:{
     type: Date,
     default: Date.now,

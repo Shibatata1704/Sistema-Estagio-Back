@@ -33,7 +33,7 @@ class AuthController {
                 res.status(httpStatusCodes.ERROR).json({ message: "erro"});
             }
 
-            const isUserLogged = await AuthModel.findOne({email});
+            let isUserLogged = await AuthModel.findOne({email});
             const token = jwt.sign({id: user._id}, process.env.SECRET ,{
                 expiresIn: "1d",
             });
@@ -46,14 +46,13 @@ class AuthController {
 
             } else {
     
-                await AuthModel.create({email, token})
+                isUserLogged = await AuthModel.create({email, token})
             }
 
-            res.send({
+            return res.status(httpStatusCodes.OK).json({
                 token,
-                id: user.id,
-                // name: user.nome,
-                // email: user.email
+                id: user._id,
+                // Outras informações do usuário, se necessário
             });
         } catch(erro){
             res.status(httpStatusCodes.ERROR).json({ message: `${erro.message}`});

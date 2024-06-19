@@ -54,6 +54,7 @@ class UserController {
 
     static async createUser (req, res) {
         const user = req.body;
+        user.tipo = "candidato"
         try{
             if(!validator.isEmail(user.email)) 
                 return res.status(httpStatusCodes.INVALID_DATA).json({message: "E-mail invalido"});
@@ -70,6 +71,7 @@ class UserController {
 
     static async createCompany (req, res) {
         const company = req.body;
+        company.tipo = "empresa"
         try{
             if(!validator.isEmail(company.email)) 
                 return res.status(httpStatusCodes.INVALID_DATA).json({message: "E-mail invalido"});
@@ -126,6 +128,22 @@ class UserController {
             res.status(httpStatusCodes.INTERNAL_SERVER_ERROR).json({ message: `${erro.message} - falha na exclusão`});
         }
     };
+
+    static async searchUser (req, res)  {
+        const { competencias, experiencia } = req.body;
+      
+        try {
+            User.find({ competencia :  competencias})
+            .then(users => {
+              // Handle found users
+              console.log(users);
+            })
+      
+          res.status(200).json(users);
+        } catch (err) {
+          res.status(500).json({ message: err.message });
+        }
+      };
 
 };
 

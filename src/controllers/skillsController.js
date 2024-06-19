@@ -1,16 +1,16 @@
-import SkillModel from "../models/skillsModel.js";
+import {skills} from "../models/skillModel.js";
 
 
 class SkillsController {
 
     static async getSkills (req,res){
         try{
-            const skills = await SkillModel.find({});
-            res.status(200).json(skills);
+            const Skills = await skills.find({});
+            res.status(200).json(Skills);
         }catch (erro) {
             res.status(500).json({ message: `${erro.message} - falha na requisição`});
         }
     };
 };
 
-export default skillsController;
+export default SkillsController;

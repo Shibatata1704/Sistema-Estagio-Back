@@ -18,9 +18,8 @@ const experienceSchema = new mongoose.Schema({
   }
 });
 
-const experience = mongoose.model("whitelist", experienceSchema);
+const Experience = mongoose.model("experience", experienceSchema);
 
-export default experience;
-
+export {Experience, experienceSchema};
 
 

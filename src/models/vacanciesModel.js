@@ -26,13 +26,13 @@ const vacanciesSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  ramo_id:branchesSchema,
-  competencias: skillSchema,
+  ramo_id: [branchesSchema],
+  competencias: [skillSchema],
 });
 
-const vacancies = mongoose.model("vacanciess", vacanciesSchema);
+const Vacancies = mongoose.model("vacanciess", vacanciesSchema);
 
-export {vacancies, vacanciesSchema};
+export {Vacancies, vacanciesSchema};
 
 
 

@@ -18,8 +18,8 @@ const app = express();
 
 const corsOptions = {
     origin: "*",
-    methods: "GET,PUT,POST,DELETE, PATCH",
-    allowedHeaders: "Authorization,Content-Type",
+    methods: "*",
+    allowedHeaders: "*",
     maxAge: 3600, // Cache por 1 hora
   };
   

@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import {skillSchema} from "./skillModel.js";
+import {experienceSchema} from "./experienceModel.js";
 
 const userSchema = new mongoose.Schema({
   nome: {
@@ -17,7 +18,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  //habilidade: skillSchema,
+  tipo: {
+    type: String,
+    required: true
+  },
+  competencia: [skillSchema],
+  experiencia: [experienceSchema],
   createdAt:{
     type: Date,
     default: Date.now,
